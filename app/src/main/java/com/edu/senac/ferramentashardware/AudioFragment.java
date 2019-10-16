@@ -10,6 +10,8 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,15 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+/*
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * // * {@link AudioFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link AudioFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
 public class AudioFragment extends Fragment {
 
 
@@ -57,10 +68,13 @@ public class AudioFragment extends Fragment {
         imgStatus = view.findViewById(R.id.status);
         gravar = view.findViewById(R.id.gravar);
         escutar = view.findViewById(R.id.escutar);
+        tempoTranscorido = view.findViewById(R.id.tempoPassado);
+        tempoRestante = view.findViewById(R.id.tempoFaltando);
 
         gravar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(getActivity(), "Gravando", Toast.LENGTH_SHORT).show();
                 gravar();
             }
         });
@@ -68,6 +82,7 @@ public class AudioFragment extends Fragment {
         escutar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getActivity(), "Reproduzindo", Toast.LENGTH_SHORT).show();
                 escutar();
             }
         });
@@ -124,7 +139,6 @@ public class AudioFragment extends Fragment {
 
 
     }
-
     private void startPlayning() {
         ouvindo = true;
         mediaPlayer = new MediaPlayer();
@@ -132,6 +146,18 @@ public class AudioFragment extends Fragment {
             mediaPlayer.setDataSource(fileName);
             mediaPlayer.prepare();
             mediaPlayer.start();
+            //mediaPlayer = MediaPlayer.create(this,R.raw.fireball);//(this, R.media.music);
+            mediaPlayer.setLooping(false);
+            mediaPlayer.seekTo(0);
+            mediaPlayer.setVolume(0.5f, 0.5f);
+            tempoTotal = mediaPlayer.getDuration();
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    escutar();
+                }
+            });
+
             volumeBar = getActivity().findViewById(R.id.volume);
             volumeBar.setOnSeekBarChangeListener(
                     new SeekBar.OnSeekBarChangeListener() {
@@ -153,20 +179,55 @@ public class AudioFragment extends Fragment {
                     }
             );
 
+            posicaoBar = getActivity().findViewById(R.id.progresso);
+            posicaoBar.setMax(tempoTotal);
+            posicaoBar.setOnSeekBarChangeListener(
+                    new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            if (fromUser) {
+                                mediaPlayer.seekTo(progress);
+                                posicaoBar.setProgress(progress);
+                            }
+                        }
+
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
+
+                        }
+
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
+
+                        }
+                    }
+            );
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    while (mediaPlayer != null) {
+                        try {
+                            Message msg = new Message();
+                            msg.what = mediaPlayer.getCurrentPosition();
+                            handler.sendMessage(msg);
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {}
+                    }
+                }
+            }).start();
         } catch (Exception e) {
             Log.e("audio", "erro=>startPlayning");
         }
-        while (mediaPlayer.isPlaying()){
-
-        }
-
-        mediaPlayer.pause();
-        escutar();
 
     }
+
+    //(gravando)?"fdfdf":"fbdfgf";
     public void onPlay(boolean start) {
         if (start) {
-
+            //if(gravando==true){
+            //   ouvindo==false
+            //  }
             startPlayning();
         } else {
             stopPlayning();
@@ -203,6 +264,7 @@ public class AudioFragment extends Fragment {
             Log.e("audio", "erro=>startRecording");
         }
         recorder.start();
+
     }
 
     private void stopRecording() {
@@ -211,6 +273,33 @@ public class AudioFragment extends Fragment {
         recorder.release();
         recorder = null;
 
+    }
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            int currentPosition = msg.what;
+            // Atualiza progressoBar
+            posicaoBar.setProgress(currentPosition);
+
+            // Atualiza tempo
+            String elapsedTime = criaTemporizador(currentPosition);
+            tempoTranscorido.setText(elapsedTime);
+
+            String remainingTime = criaTemporizador(tempoTotal-currentPosition);
+            tempoRestante.setText("- " + remainingTime);
+        }
+    };
+
+    public String criaTemporizador(int time) {
+        String tempo = "";
+        int min = time / 1000 / 60;
+        int sec = time / 1000 % 60;
+
+        tempo = min + ":";
+        if (sec < 10) tempo += "0";
+        tempo += sec;
+
+        return tempo;
     }
 
 }
