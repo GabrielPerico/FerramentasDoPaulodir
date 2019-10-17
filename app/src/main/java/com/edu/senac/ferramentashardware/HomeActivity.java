@@ -47,6 +47,12 @@ boolean viewIsAtHome=true;
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        getSupportActionBar().setTitle("Home");
+        FragmentTransaction ft =
+                getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame,new HomeFragment());
+        ft.commit();
     }
 
     @Override
@@ -100,16 +106,16 @@ boolean viewIsAtHome=true;
 
         if (id == R.id.nav_home) {
             fragment = new HomeFragment();
-            title ="home";
+            title ="Home";
             viewIsAtHome=true;
         }else if (id == R.id.nav_audio){
             fragment = new AudioFragment();
             title ="Audio";
             viewIsAtHome =false;
         }else if (id == R.id.nav_geolocalizacao){
-        fragment = new GeolocalizacaoFragment();
-        title ="geolocalização";
-        viewIsAtHome =false;
+            fragment = new GeolocalizacaoFragment();
+            title ="geolocalização";
+            viewIsAtHome =false;
         }else if (id == R.id.nav_acelerometro){
             fragment = new AcelerometroFragment();
             title ="Acelerômetro";

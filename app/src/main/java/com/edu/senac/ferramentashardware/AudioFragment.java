@@ -74,7 +74,6 @@ public class AudioFragment extends Fragment {
         gravar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "Gravando", Toast.LENGTH_SHORT).show();
                 gravar();
             }
         });
@@ -82,7 +81,6 @@ public class AudioFragment extends Fragment {
         escutar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Reproduzindo", Toast.LENGTH_SHORT).show();
                 escutar();
             }
         });
@@ -151,12 +149,6 @@ public class AudioFragment extends Fragment {
             mediaPlayer.seekTo(0);
             mediaPlayer.setVolume(0.5f, 0.5f);
             tempoTotal = mediaPlayer.getDuration();
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    escutar();
-                }
-            });
 
             volumeBar = getActivity().findViewById(R.id.volume);
             volumeBar.setOnSeekBarChangeListener(

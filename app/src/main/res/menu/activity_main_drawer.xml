@@ -10,37 +10,24 @@
             android:title="@string/menu_home" />
         <item
             android:id="@+id/nav_audio"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/headphones"
             android:title="audio" />
         <item
             android:id="@+id/nav_acelerometro"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/compass"
             android:title="acelerometro" />
         <item
             android:id="@+id/nav_geolocalizacao"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/locationonmap"
             android:title="geolocalizacao" />
         <item
             android:id="@+id/nav_dadostelefone"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/dadostelefone"
             android:title="dados do telefone" />
         <item
             android:id="@+id/nav_qrcode"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/qrcode"
             android:title="QR Code" />
     </group>
-
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="@string/menu_share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="@string/menu_send" />
-        </menu>
-    </item>
 
 </menu>
